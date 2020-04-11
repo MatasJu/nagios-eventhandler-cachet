@@ -104,7 +104,7 @@ if ($result['code'] != 200) {
 }
 $cachet_incident_id = false;
 foreach ($results['body']->data as $incident) {
-  if (($incident->name == $incident_prefix . ' ' . $service_name) and ($incident->status != CACHET_STATUS_FIXED)) {
+  if (($incident->name == $incident_prefix . ' ' . $cachet_component . ' ' . $service_name) and ($incident->status != CACHET_STATUS_FIXED)) {
     $cachet_incident_id = $incident->id;
     break; // Yes, bad.
   }
@@ -117,7 +117,7 @@ if ($service_status == 'WARNING' && $service_status_type == 'SOFT') {
   //exit(0);
   echo 'WARNING SOFT: creating incident' . "\n";
   $query = array(
-    'name' => $incident_prefix . ' ' . $service_name,
+    'name' => $incident_prefix . ' ' . $cachet_component . ' ' . $service_name,
     'message' => $service_output,
     'status' => CACHET_STATUS_WATCHING,
     'visible' => $cachet_incident_visible,
@@ -156,7 +156,7 @@ if ($service_status == 'WARNING' && $service_status_type == 'SOFT') {
   }
   $cachet_incident_id = false;
   foreach ($results['body']->data as $incident) {
-    if (($incident->name == $incident_prefix . ' ' . $service_name) and ($incident->status != CACHET_STATUS_FIXED)) {
+    if (($incident->name == $incident_prefix . ' ' . $cachet_component . ' ' . $service_name) and ($incident->status != CACHET_STATUS_FIXED)) {
       $cachet_incident_id = $incident->id;
       break; // Yes, bad.
     }
