@@ -188,6 +188,7 @@ if ($service_status == 'WARNING' && $service_status_type == 'SOFT') {
   }
 } else {
   echo 'Bad arguments' . "\n";
+  print_r($argv);
   exit(1);
 }
 
