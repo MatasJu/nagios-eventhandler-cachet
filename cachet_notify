@@ -112,7 +112,7 @@ foreach ($results['body']->data as $incident) {
 if ($service_status != 'OK' &&  $cachet_incident_id !== false) {
   exit(0);
 }
-if ($service_status == 'WARNING' && $service_status_type == 'HARD') {
+if ($service_status == 'WARNING' && $service_status_type == 'SOFT') {
   //echo 'KO SOFT: not doing anything' . "\n";
   //exit(0);
   echo 'WARNING SOFT: creating incident' . "\n";
@@ -130,7 +130,7 @@ if ($service_status == 'WARNING' && $service_status_type == 'HARD') {
     echo 'Can\'t create incident' . "\n";
     exit(1);
   }
-} elseif ($service_status == 'CRITICAL' && $service_status_type == 'HARD') {
+} elseif (($service_status == 'CRITICAL' || $service_status == 'WARNING' || $service_status == 'UNKONWN' )&& $service_status_type == 'HARD') {
   echo 'KO HARD: creating incident' . "\n";
   $query = array(
     'name' => $incident_prefix . ' ' . $service_name,
