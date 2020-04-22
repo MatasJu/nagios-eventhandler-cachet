@@ -127,7 +127,7 @@ if ($service_status == 'WARNING' && $service_status_type == 'SOFT') {
     echo 'Can\'t create incident' . "\n";
     exit(1);
   }
-} elseif (($service_status == 'CRITICAL' || $service_status == 'WARNING' || $service_status == 'UNKNOWN' )&& $service_status_type == 'HARD') {
+} elseif (($service_status == 'CRITICAL' || $service_status == 'WARNING' || $service_status == 'UNKNOWN' || $service_status == 'DOWN' || $service_status == 'UNREACHABLE' )&& $service_status_type == 'HARD') {
   echo 'KO HARD: creating incident' . "\n";
   $query = array(
     'name' => $incident_prefix . ' ' . $cachet_component . ' ' . $service_name,
@@ -143,7 +143,7 @@ if ($service_status == 'WARNING' && $service_status_type == 'SOFT') {
     echo 'Can\'t create incident' . "\n";
     exit(1);
   }
-} elseif ($service_status == 'OK') { // Recovery underway
+} elseif ($service_status == 'OK' || $service_status == 'UP') { // Recovery underway
   echo 'OK: updating incident' . "\n";
   /* Get the incident ID */
   $results = cachet_query('incidents?sort=id&order=asc&per_page=100');
