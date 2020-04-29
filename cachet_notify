@@ -180,5 +180,5 @@ if (($service_status == 'CRITICAL' || $service_status == 'WARNING' || $service_s
     print_r($argv);
     exit(1);
 }
-echo 'didnt match anything' . "\n";
-exit(1);
+echo 'all good hopefully---' . "\n";
+exit(0);
