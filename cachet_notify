@@ -7,7 +7,7 @@ if ($argc != 6) {
   exit(1);
 }
 
-echo "we got to 1"
+
 $cachet_url = 'http://localhost/api/v1/';
 $api_key = 'a3yWRNgHtkQaXxs9NLoe';
 $proxy_ip = 'xxxxx';
@@ -29,7 +29,6 @@ define('CACHET_STATUS_INVESTIGATING', 1);
 define('CACHET_STATUS_IDENTIFIED', 2);
 define('CACHET_STATUS_WATCHING', 3);
 define('CACHET_STATUS_FIXED', 4);
-echo "we got to 2"
 
 define('CACHET_COMPONENT_STATUS_OPERATIONAL', 1);
 define('CACHET_COMPONENT_STATUS_PERFORMANCE_ISSUES', 2);
@@ -118,11 +117,13 @@ Determine what to to:
 PROBLEM = !OK | !UP = (WARNING | CRITICAL |  UNKNOWN)
 RECOVERY = OK
 */
+
 $results = cachet_query('incidents?sort=id&order=asc&per_page=100');
 if ($result['code'] != 200) {
   echo 'Can\'t get incidents' . "\n";
   exit(1);
 }
+
 $cachet_incident_id = false;
 foreach ($results['body']->data as $incident) {
   if (($incident->name == $incident_prefix . ' ' . $cachet_component . ' ' . $service_name) and ($incident->status != CACHET_STATUS_FIXED)) {
@@ -130,8 +131,7 @@ foreach ($results['body']->data as $incident) {
     echo 'Incident found.'
     break; // Yes, bad.
   }
-}
-else {
+} else {
     echo 'Incident not found'
 }
 
