@@ -16,7 +16,7 @@ $proxy_user = 'xxxxx';
 $proxy_pass = 'xxxxx';
 
 $incident_prefix = '[AUTO]';
-$cachet_notify_subscribers = true; // Enable subscribers notifcation for incidents creation and updates
+$cachet_notify_subscribers = false; // Enable subscribers notifcation for incidents creation and updates
 $cachet_incident_visible = true;
 
 $cachet_component = $argv[1];
