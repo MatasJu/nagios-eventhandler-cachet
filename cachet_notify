@@ -39,30 +39,33 @@ function cachet_query($api_part, $action = 'GET', $data = null)
 {
     global $api_key, $cachet_url;
 
-    print_r($data);
-
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $cachet_url . $api_part);
+
+    $api_part = str_replace( ' ', '%20', $api_part);
+    
+    print($api_part);
+    curl_setopt($ch, CURLOPT_URL,$cachet_url . $api_part);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
     if (in_array($action, array('GET', 'POST', 'PUT'))) {
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $action);
     }
-
-    if ($data !== null && is_array($data)) {
-        $ch_data = http_build_query($data);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $ch_data);
+    
+    if ($data != null && is_array($data)) {
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
     }
 
+    
     $ch_headers = array(
         'X-Cachet-Token: ' . $api_key
     );
+
     curl_setopt($ch, CURLOPT_HTTPHEADER, $ch_headers);
 
     curl_setopt($ch, CURLOPT_HEADER, false); // Don't return headers
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return body
+    ($ch);
     $http_body = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
@@ -94,7 +97,10 @@ if ($service_status_type == 'SOFT') {
 
 /* Find Cachet component ID */
 
+
 $result = cachet_query('components?name=' . $cachet_component);
+print_r($result);
+
 if ($result['code'] != 200) {
     echo 'Can\'t query components' . "\n";
     exit(1);
