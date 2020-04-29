@@ -7,6 +7,7 @@ if ($argc != 6) {
   exit(1);
 }
 
+echo "we got to 1"
 $cachet_url = 'http://localhost/api/v1/';
 $api_key = 'a3yWRNgHtkQaXxs9NLoe';
 $proxy_ip = 'xxxxx';
@@ -28,6 +29,7 @@ define('CACHET_STATUS_INVESTIGATING', 1);
 define('CACHET_STATUS_IDENTIFIED', 2);
 define('CACHET_STATUS_WATCHING', 3);
 define('CACHET_STATUS_FIXED', 4);
+echo "we got to 2"
 
 define('CACHET_COMPONENT_STATUS_OPERATIONAL', 1);
 define('CACHET_COMPONENT_STATUS_PERFORMANCE_ISSUES', 2);
@@ -68,6 +70,9 @@ function cachet_query($api_part, $action = 'GET', $data = null) {
   return array('code' => $http_code, 'body' => json_decode($http_body));
 }
 
+echo "we got to 3"
+
+
 /* Find Cachet component ID */
 $result = cachet_query('components');
 if ($result['code'] != 200) {
@@ -91,7 +96,7 @@ Determine what to to:
  - if PROBLEM and HARD then create incident
  - if RECOVERY and SOFT or HARD then update incident
 
-PROBLEM = !OK = (WARNING | CRITICAL |  UNKNOWN)
+PROBLEM = !OK | !UP = (WARNING | CRITICAL |  UNKNOWN)
 RECOVERY = OK
 */
 $results = cachet_query('incidents?sort=id&order=asc&per_page=100');
@@ -103,10 +108,16 @@ $cachet_incident_id = false;
 foreach ($results['body']->data as $incident) {
   if (($incident->name == $incident_prefix . ' ' . $cachet_component . ' ' . $service_name) and ($incident->status != CACHET_STATUS_FIXED)) {
     $cachet_incident_id = $incident->id;
+    echo 'Incident found.'
     break; // Yes, bad.
   }
 }
-if ($service_status != 'OK' &&  $cachet_incident_id !== false) {
+else {
+    echo 'Incident not found'
+}
+echo "we got here"
+if (($service_status != 'OK' || ($service_status != 'UP')  &&  $cachet_incident_id !== false) {
+  echo "Incident ongoing"
   exit(0);
 }
 if ($service_status == 'WARNING' && $service_status_type == 'SOFT') {
@@ -189,4 +200,5 @@ if ($service_status == 'WARNING' && $service_status_type == 'SOFT') {
   exit(1);
 }
 
+echo 'Everything should have been fine'
 exit(0);
