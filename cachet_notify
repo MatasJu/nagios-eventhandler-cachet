@@ -94,12 +94,7 @@ if ($service_status_type == 'SOFT') {
 
 /* Find Cachet component ID */
 
-$queryComp = array(
-    'name' => $cachet_component
-);
-
-
-$result = cachet_query('components','GET',$queryComp);
+$result = cachet_query('components?name=' . $cachet_component);
 if ($result['code'] != 200) {
     echo 'Can\'t query components' . "\n";
     exit(1);
