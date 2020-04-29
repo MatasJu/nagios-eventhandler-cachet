@@ -74,7 +74,7 @@ function cachet_query($api_part, $action = 'GET', $data = null)
 if ($service_status_type == 'SOFT') {
     echo 'SOFT Warning: not doing anything' . "\n";
     print_r($argv);
-    exit(0);
+    exit(1);
     /*echo 'WARNING SOFT: creating incident' . "\n";
     $query = array(
       'name' => $incident_prefix . ' ' . $cachet_component . ' ' . $service_name,
@@ -138,9 +138,7 @@ foreach ($results['body']->data as $incident) {
     if (($service_status != 'OK') || ($service_status != 'UP') && $cachet_incident_id !== false) {
         echo "Incident ongoing";
         exit(0);
-    }
-
-    if (($service_status == 'CRITICAL' || $service_status == 'WARNING' || $service_status == 'UNKNOWN' || $service_status == 'DOWN' || $service_status == 'UNREACHABLE') && $service_status_type == 'HARD') {
+    } elseif (($service_status == 'CRITICAL' || $service_status == 'WARNING' || $service_status == 'UNKNOWN' || $service_status == 'DOWN' || $service_status == 'UNREACHABLE') && $service_status_type == 'HARD') {
         echo 'KO HARD: creating incident' . "\n";
         $query = array(
             'name' => $incident_prefix . ' ' . $cachet_component . ' ' . $service_name,
