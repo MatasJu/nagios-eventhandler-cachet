@@ -2,9 +2,9 @@
 <?php
 
 if ($argc != 6) {
-  echo 'Usage: ' . basename(__FILE__) . ' cachet_component service_name service_state service_state_type service_output' . "\n";
-  print_r($argv);
-  exit(1);
+    echo 'Usage: ' . basename(__FILE__) . ' cachet_component service_name service_state service_state_type service_output' . "\n";
+    print_r($argv);
+    exit(1);
 }
 
 
@@ -35,78 +35,79 @@ define('CACHET_COMPONENT_STATUS_PERFORMANCE_ISSUES', 2);
 define('CACHET_COMPONENT_STATUS_PARTIAL_OUTAGE', 3);
 define('CACHET_COMPONENT_STATUS_MAJOR_OUTAGE', 4);
 
-function cachet_query($api_part, $action = 'GET', $data = null) {
-  global $api_key, $cachet_url;
+function cachet_query($api_part, $action = 'GET', $data = null)
+{
+    global $api_key, $cachet_url;
 
-  print_r($data);
+    print_r($data);
 
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $cachet_url . $api_part);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  
-  if (in_array($action, array('GET', 'POST', 'PUT'))) {
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $action);
-  }
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $cachet_url . $api_part);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
-  if ($data !== null && is_array($data)) {
-    $ch_data = http_build_query($data);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $ch_data);
-  }
+    if (in_array($action, array('GET', 'POST', 'PUT'))) {
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $action);
+    }
 
-  $ch_headers = array(
-    'X-Cachet-Token: ' . $api_key
-  );
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $ch_headers);
+    if ($data !== null && is_array($data)) {
+        $ch_data = http_build_query($data);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $ch_data);
+    }
 
-  curl_setopt($ch, CURLOPT_HEADER, false); // Don't return headers
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return body
-  $http_body = curl_exec($ch);
-  $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-  curl_close($ch);
+    $ch_headers = array(
+        'X-Cachet-Token: ' . $api_key
+    );
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $ch_headers);
 
-  return array('code' => $http_code, 'body' => json_decode($http_body));
+    curl_setopt($ch, CURLOPT_HEADER, false); // Don't return headers
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return body
+    $http_body = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    return array('code' => $http_code, 'body' => json_decode($http_body));
 }
 
 
 if ($service_status_type == 'SOFT') {
-  echo 'SOFT Warning: not doing anything' . "\n";
-  print_r($argv);
-  exit(0);
-  /*echo 'WARNING SOFT: creating incident' . "\n";
-  $query = array(
-    'name' => $incident_prefix . ' ' . $cachet_component . ' ' . $service_name,
-    'message' => $service_output,
-    'status' => CACHET_STATUS_WATCHING,
-    'visible' => $cachet_incident_visible,
-    'component_id' => $cachet_component_id,
-    'component_status' => CACHET_COMPONENT_STATUS_PERFORMANCE_ISSUES,
-    'notify' => $cachet_notify_subscribers,
-  );
-  $result = cachet_query('incidents', 'POST', $query);
-  if ($result['code'] != 200) {
-    echo 'Can\'t create incident' . "\n";
-    exit(1);
-  }*/
+    echo 'SOFT Warning: not doing anything' . "\n";
+    print_r($argv);
+    exit(0);
+    /*echo 'WARNING SOFT: creating incident' . "\n";
+    $query = array(
+      'name' => $incident_prefix . ' ' . $cachet_component . ' ' . $service_name,
+      'message' => $service_output,
+      'status' => CACHET_STATUS_WATCHING,
+      'visible' => $cachet_incident_visible,
+      'component_id' => $cachet_component_id,
+      'component_status' => CACHET_COMPONENT_STATUS_PERFORMANCE_ISSUES,
+      'notify' => $cachet_notify_subscribers,
+    );
+    $result = cachet_query('incidents', 'POST', $query);
+    if ($result['code'] != 200) {
+      echo 'Can\'t create incident' . "\n";
+      exit(1);
+    }*/
 }
 
 /* Find Cachet component ID */
 $result = cachet_query('components');
 if ($result['code'] != 200) {
-  echo 'Can\'t query components' . "\n";
-  exit(1);
+    echo 'Can\'t query components' . "\n";
+    exit(1);
 }
 $cachet_component_id = false;
 foreach ($result['body']->data as $component) {
-  if ($cachet_component == $component->name) { // We nailed it
-    $cachet_component_id = $component->id;
-    break; // Yes, bad.
-  }
+    if ($cachet_component == $component->name) { // We nailed it
+        $cachet_component_id = $component->id;
+        break; // Yes, bad.
+    }
 }
 if ($cachet_component_id === false) {
-  echo 'Can\'t find component "' . $cachet_component . '"' . "\n";
-  exit(1);
+    echo 'Can\'t find component "' . $cachet_component . '"' . "\n";
+    exit(1);
 }
 
 /*
@@ -120,86 +121,86 @@ RECOVERY = OK
 
 $results = cachet_query('incidents?sort=id&order=asc&per_page=100');
 if ($result['code'] != 200) {
-  echo 'Can\'t get incidents' . "\n";
-  exit(1);
+    echo 'Can\'t get incidents' . "\n";
+    exit(1);
 }
 
 $cachet_incident_id = false;
 foreach ($results['body']->data as $incident) {
-  if (($incident->name == $incident_prefix . ' ' . $cachet_component . ' ' . $service_name) and ($incident->status != CACHET_STATUS_FIXED)) {
-    $cachet_incident_id = $incident->id;
-    echo 'Incident found.'
-    break; // Yes, bad.
-  }
-} else {
-    echo 'Incident not found'
-}
-
-if (($service_status != 'OK' || ($service_status != 'UP')  &&  $cachet_incident_id !== false) {
-  echo "Incident ongoing"
-  exit(0);
-}
-
-if (($service_status == 'CRITICAL' || $service_status == 'WARNING' || $service_status == 'UNKNOWN' || $service_status == 'DOWN' || $service_status == 'UNREACHABLE' )&& $service_status_type == 'HARD') {
-  echo 'KO HARD: creating incident' . "\n";
-  $query = array(
-    'name' => $incident_prefix . ' ' . $cachet_component . ' ' . $service_name,
-    'message' => $service_output,
-    'status' => CACHET_STATUS_INVESTIGATING,
-    'visible' => $cachet_incident_visible,
-    'component_id' => $cachet_component_id,
-    'component_status' => CACHET_COMPONENT_STATUS_MAJOR_OUTAGE,
-    'notify' => $cachet_notify_subscribers,
-  );
-  $result = cachet_query('incidents', 'POST', $query);
-  if ($result['code'] != 200) {
-    echo 'Can\'t create incident' . "\n";
-    exit(1);
-  }
-} elseif ($service_status == 'OK' || $service_status == 'UP') { // Recovery underway
-  echo 'OK: updating incident' . "\n";
-  /* Get the incident ID */
-  $results = cachet_query('incidents?sort=id&order=asc&per_page=100');
-  if ($result['code'] != 200) {
-    echo 'Can\'t get incidents' . "\n";
-    exit(1);
-  }
-  $cachet_incident_id = false;
-  foreach ($results['body']->data as $incident) {
     if (($incident->name == $incident_prefix . ' ' . $cachet_component . ' ' . $service_name) and ($incident->status != CACHET_STATUS_FIXED)) {
-      $cachet_incident_id = $incident->id;
-      break; // Yes, bad.
+        $cachet_incident_id = $incident->id;
+        echo 'Incident found.';
+        break; // Yes, bad.
+    } else {
+        echo 'Incident not found';
     }
-  }
-  if ($cachet_incident_id === false) {
-    echo 'Can\'t find incident "' . $incident_prefix . ' ' . $cachet_component . ' ' . $service_name . '"' . "\n";
-    exit(1);
-  }
 
-  /* Update the incident */
-  $query = array(
-    'message' => $service_output,
-    'status' => CACHET_STATUS_FIXED
-  );
-  $result = cachet_query('incidents/' . $cachet_incident_id . '/updates', 'POST', $query);
-  if ($result['code'] != 200) {
-    echo 'Can\'t update incident' . "\n";
-    exit(1);
-  }
+    if (($service_status != 'OK') || ($service_status != 'UP') && $cachet_incident_id !== false) {
+        echo "Incident ongoing";
+        exit(0);
+    }
 
-  /* Update the component */
-  $query = array(
-    'status' => CACHET_COMPONENT_STATUS_OPERATIONAL
-  );
-  $result = cachet_query('components/' . $cachet_component_id, 'PUT', $query);
-  if ($result['code'] != 200) {
-    echo 'Can\'t update component' . "\n";
-    exit(1);
-  }
-} else {
-  echo 'Bad arguments' . "\n";
-  print_r($argv);
-  exit(1);
+    if (($service_status == 'CRITICAL' || $service_status == 'WARNING' || $service_status == 'UNKNOWN' || $service_status == 'DOWN' || $service_status == 'UNREACHABLE') && $service_status_type == 'HARD') {
+        echo 'KO HARD: creating incident' . "\n";
+        $query = array(
+            'name' => $incident_prefix . ' ' . $cachet_component . ' ' . $service_name,
+            'message' => $service_output,
+            'status' => CACHET_STATUS_INVESTIGATING,
+            'visible' => $cachet_incident_visible,
+            'component_id' => $cachet_component_id,
+            'component_status' => CACHET_COMPONENT_STATUS_MAJOR_OUTAGE,
+            'notify' => $cachet_notify_subscribers,
+        );
+        $result = cachet_query('incidents', 'POST', $query);
+        if ($result['code'] != 200) {
+            echo 'Can\'t create incident' . "\n";
+            exit(1);
+        }
+    } elseif ($service_status == 'OK' || $service_status == 'UP') { // Recovery underway
+        echo 'OK: updating incident' . "\n";
+        /* Get the incident ID */
+        $results = cachet_query('incidents?sort=id&order=asc&per_page=100');
+        if ($result['code'] != 200) {
+            echo 'Can\'t get incidents' . "\n";
+            exit(1);
+        }
+        $cachet_incident_id = false;
+        foreach ($results['body']->data as $incident) {
+            if (($incident->name == $incident_prefix . ' ' . $cachet_component . ' ' . $service_name) and ($incident->status != CACHET_STATUS_FIXED)) {
+                $cachet_incident_id = $incident->id;
+                break; // Yes, bad.
+            }
+        }
+        if ($cachet_incident_id === false) {
+            echo 'Can\'t find incident "' . $incident_prefix . ' ' . $cachet_component . ' ' . $service_name . '"' . "\n";
+            exit(1);
+        }
+
+        /* Update the incident */
+        $query = array(
+            'message' => $service_output,
+            'status' => CACHET_STATUS_FIXED
+        );
+        $result = cachet_query('incidents/' . $cachet_incident_id . '/updates', 'POST', $query);
+        if ($result['code'] != 200) {
+            echo 'Can\'t update incident' . "\n";
+            exit(1);
+        }
+
+        /* Update the component */
+        $query = array(
+            'status' => CACHET_COMPONENT_STATUS_OPERATIONAL
+        );
+        $result = cachet_query('components/' . $cachet_component_id, 'PUT', $query);
+        if ($result['code'] != 200) {
+            echo 'Can\'t update component' . "\n";
+            exit(1);
+        }
+    } else {
+        echo 'Bad arguments' . "\n";
+        print_r($argv);
+        exit(1);
+    }
+
+    exit(0);
 }
-
-exit(0);
