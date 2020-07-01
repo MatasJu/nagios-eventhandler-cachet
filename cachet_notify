@@ -128,6 +128,15 @@ RECOVERY = OK
 
 if (($service_status == 'CRITICAL' || $service_status == 'WARNING' || $service_status == 'UNKNOWN' || $service_status == 'DOWN' || $service_status == 'UNREACHABLE')) {
     echo 'OK HARD: creating incident' . "\n";
+    
+    /*Ignore if there is an incident open for the component*/
+    foreach ($results['body']->data as $incident) {
+        if (($incident->name == $incident_prefix . ' ' . $cachet_component . ' ' . $service_name) and ($incident->status != CACHET_STATUS_FIXED)) {
+            echo 'Incident already found' ;
+            exit(1);
+        }
+    }    
+    
     $query = array(
         'name' => $incident_prefix . ' ' . $cachet_component . ' ' . $service_name,
         'message' => $service_output,
